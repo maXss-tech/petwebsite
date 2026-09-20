@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PawBnB · Customer Assistance</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,600;14..32,800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="navbar"><div class="nav-container">
+    <div class="nav-logo"><i class="fas fa-paw" style="color:#f9b83a;"></i><span>PawBnB</span></div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li><li><a href="about us.html">About Us</a></li>
+      <li><a href="create pet profile.html">Create Pet</a></li>
+      <li><a href="pet emergency assitance.html">Pet Emergency</a></li>
+      <li><a href="costumer service.html" class="active">Customer Service</a></li><li><a href="book.html">Book</a></li>
+    </ul>
+  </div></nav>
+
+  <section class="page-header"><h1><i class="fas fa-headset"></i> Customer Assistance</h1><p>We're here to help you and your paws</p></section>
+  <section class="content-grid">
+    <div class="support-card"><i class="fas fa-comments"></i><h3>Live Chat</h3><p>Chat with our team</p><button class="btn-primary">Start Chat</button></div>
+    
+    
+    <!-- FUNCTIONAL FAQ CARD -->
+<div class="support-card" id="faqCard">
+      <div class="card-icon"><i class="fas fa-question-circle"></i></div>
+      <h3>FAQs</h3>
+      <p>How to book? Cancel? Refund?</p>
+      <button class="btn-ghost faq-link" onclick="toggleFAQ()"><span id="faqLabel">View FAQs</span> <span id="faqArrow">→</span></button>
+      <div class="faq-panel" id="faqPanel">
+        <div class="faq-panel-inner">
+          <div class="faq-list">
+            <div class="faq-item open" onclick="toggleAnswer(this)">
+              <div class="faq-q">How to book? <span><i class="fas fa-minus"></i></span></div>
+              <div class="faq-a"><div class="faq-a-inner"><div>Go to Book page → select check-in / check-out → choose your pet → Confirm Booking. You'll get a confirmation email instantly with your host details and stay summary.</div></div></div>
+            </div>
+            <div class="faq-item" onclick="toggleAnswer(this)">
+              <div class="faq-q">How to cancel? <span><i class="fas fa-plus"></i></span></div>
+              <div class="faq-a"><div class="faq-a-inner"><div>You can cancel free within 24h of booking. Go to My Bookings → Cancel. After 24h, a 50% fee applies to support our hosts. Emergencies are always reviewed case-by-case.</div></div></div>
+            </div>
+            <div class="faq-item" onclick="toggleAnswer(this)">
+              <div class="faq-q">Refund policy? <span><i class="fas fa-plus"></i></span></div>
+              <div class="faq-a"><div class="faq-a-inner"><div>Full refund if cancelled 48h before check-in. 50% refund within 24-48h. No refund for no-show. For disrupted stays, contact us within 24h and we'll make it right.</div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+<script>
+function toggleFAQ(){
+  const panel = document.getElementById('faqPanel');
+  const label = document.getElementById('faqLabel');
+  const arrow = document.getElementById('faqArrow');
+  const isOpen = panel.classList.toggle('open');
+  label.textContent = isOpen ? 'Hide FAQs' : 'View FAQs';
+  arrow.textContent = isOpen ? '↑' : '→';
+}
+
+function toggleAnswer(el){
+  // close others so only one open at a time
+  document.querySelectorAll('.faq-item').forEach(item => {
+    if(item !== el){
+      item.classList.remove('open');
+      item.querySelector('i').className = 'fas fa-plus';
+    }
+  });
+  // toggle clicked one
+  el.classList.toggle('open');
+  const icon = el.querySelector('i');
+  icon.className = el.classList.contains('open') ? 'fas fa-minus' : 'fas fa-plus';
+}
+</script>
+    <div class="support-card"><i class="fas fa-envelope"></i><h3>Contact Us</h3><form><input type="email" placeholder="Your email"><textarea placeholder="Your message"></textarea><button class="btn-primary">Send</button></form></div>
+  </section>
+</body>
+</html>

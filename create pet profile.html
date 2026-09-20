@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PawBnB · Create Pet Profile</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,600;14..32,800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="navbar"><div class="nav-container">
+    <div class="nav-logo"><i class="fas fa-paw" style="color:#f9b83a;"></i><span>PawBnB</span></div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li><li><a href="about us.html">About Us</a></li>
+      <li><a href="create pet profile.html" class="active">Create Pet</a></li>
+      <li><a href="pet emergency assitance.html">Pet Emergency</a></li>
+      <li><a href="costumer service.html">Customer Service</a></li><li><a href="book.html">Book</a></li>
+    </ul>
+  </div></nav>
+
+  <section class="page-header"><h1><i class="fas fa-dog"></i> Create Pet Profile</h1><p>Add your best friend in 30 seconds</p></section>
+  <section class="form-section">
+    <form class="pet-form">
+      <label>Pet Name <input type="text" placeholder="Buddy" required></label>
+      <label>Breed <input type="text" placeholder="Golden Retriever"></label>
+      <label>Age <input type="number" placeholder="2"></label>
+      <label>Photo <input type="file" accept="image/*"></label>
+      <label>Vaccination Record <textarea placeholder="Rabies, DHPP..."></textarea></label>
+      <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Save Profile</button>
+    </form>
+  </section>
+</body>
+</html>
