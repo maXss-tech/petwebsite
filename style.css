@@ -512,3 +512,58 @@ table.dash-table tr:hover td{ background:var(--cream); }
   .dash-signout{ margin-top:0; }
   .dash-main{ padding:1.5rem; }
 }
+
+/* ===== Header: auth + admin + logout buttons ===== */
+.auth-buttons,
+.user-actions {
+  align-items: center;
+  gap: 8px;
+  margin-left: 10px;
+  position: relative;
+  z-index: 10001;
+}
+
+.auth-buttons { display: flex; }      /* visible by default (logged out) */
+.user-actions { display: none; }      /* JS shows this when logged in */
+
+.header-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.1s ease;
+}
+
+.header-btn:hover  { opacity: 0.85; }
+.header-btn:active { transform: scale(0.97); }
+
+.admin-btn {
+  display: none;                      /* JS shows this only for admins */
+  background: #3D2B1F;
+  color: #fff;
+}
+
+.logout-btn {
+  background: #C0533E;
+  color: #fff;
+}
+
+.signup-btn {
+  background: #C0533E;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  text-decoration: none;
+}
+
+/* Phones: tighten buttons so the header doesn't overflow */
+@media (max-width: 700px) {
+  .header-btn { padding: 5px 8px; font-size: 12px; }
+}

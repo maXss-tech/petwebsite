@@ -34,7 +34,6 @@
 </head>
 <body>
 
-<!-- CHANGED: now just 2 sec message, no buttons -->
 <div id="authModal">
   <div class="modal-box">
     <div style="font-size:42px;">🔒🐾</div>
@@ -64,7 +63,7 @@
   </div>
 
   <nav class="nav-links">
-    <a href="data:text/html;base64,PCFET0NUWVBFIGh0bWw+CjxodG1sIGxhbmc9ImVuIj4KPGhlYWQ+CjxtZXRhIGNoYXJzZXQ9IlVURi04Ij4KPHRpdGxlPlBhd0JuQiAtIEhvbWU8L3RpdGxlPgo8bGluayByZWw9InN0eWxlc2hlZXQiIGhyZWY9Ii4vc3R5bGUuY3NzIj4KPC9oZWFkPgo8Ym9keT4KPGgxPkhvbWU8L2gxPgo8L2JvZHk+CjwvaHRtbD4=">Home</a>
+    <a href="./index.html">Home</a>
     <a href="./about-us.html" class="requires-auth">About Us</a>
     <a href="./create-pet-profile.html" class="requires-auth">Create Pet</a>
     <a href="./pet-emergency-assitance.html" class="requires-auth">Emergency</a>
@@ -72,18 +71,31 @@
     <a href="./book.html" class="requires-auth">Book</a>
   </nav>
 
-    <a class="icon-btn big-icon requires-auth" href="./costumer service.html" title="Customer Assistance">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15v-3a8 8 0 0 1 16 0v3"/><path d="M4 15a2 2 0 0 0 2 2h1v-6H5a2 2 0 0 0-2 2z"/><path d="M20 15a2 2 0 0 1-2 2h-1v-6h1a2 2 0 0 1 2 2z"/><circle cx="12" cy="19" r="1.5"/><path d="M14.5 19c1.8-.3 3-1.2 3.5-2.5"/></svg>
+  <a class="icon-btn big-icon requires-auth" href="./costumer-service.html" title="Customer Assistance">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15v-3a8 8 0 0 1 16 0v3"/><path d="M4 15a2 2 0 0 0 2 2h1v-6H5a2 2 0 0 0-2 2z"/><path d="M20 15a2 2 0 0 1-2 2h-1v-6h1a2 2 0 0 1 2 2z"/><circle cx="12" cy="19" r="1.5"/><path d="M14.5 19c1.8-.3 3-1.2 3.5-2.5"/></svg>
+  </a>
+
+  <div class="user-chip" id="userChip">
+    <span class="avatar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></span>
+    <span id="userName">Hi, Guest</span>
+  </div>
+
+  <!-- Shown only when logged in -->
+  <div id="userActions" class="user-actions">
+    <!-- Shown only when the user is an admin -->
+    <a id="adminBtn" href="./admindashboard.html" class="header-btn admin-btn">
+      <i class="fas fa-user-shield"></i> Admin
     </a>
-    <div class="user-chip" id="userChip">
-      <span class="avatar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></span>
-      <span id="userName">Hi, Guest</span>
-      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-    </div>
-    <div id="authButtons" style="display:flex; gap:8px; margin-left:10px; position:relative; z-index:10001;">
-  <a href="./login.html" class="btn-small" style="cursor:pointer;">Log In</a>
-  <a href="./signup.html" class="btn-small" style="background:#C0533E; color:white; padding:6px 12px; border-radius:6px; cursor:pointer; text-decoration:none;">Sign Up</a>
-</div>
+    <button id="logoutBtn" class="header-btn logout-btn" type="button">
+      <i class="fas fa-sign-out-alt"></i> Log Out
+    </button>
+  </div>
+
+  <!-- Shown only when logged out -->
+  <div id="authButtons" class="auth-buttons">
+    <a href="./login.html" class="btn-small">Log In</a>
+    <a href="./signup.html" class="btn-small signup-btn">Sign Up</a>
+  </div>
 </header>
 
 <section class="hero">
@@ -95,9 +107,9 @@
 </section>
 
 <section class="quick-actions">
-  <a class="action-card requires-auth" href="./create pet profile.html"><span class="action-emoji">🐶</span><h3>Create Pet Profile</h3><span class="action-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span></a>
-  <a class="action-card requires-auth" href="./pet emergency assitance.html"><span class="action-emoji">🧰❤</span><h3>Emergency Assistance</h3><span class="action-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span></a>
-  <a class="action-card requires-auth" href="./costumer service.html"><span class="action-emoji">💬🐾</span><h3>Customer Assistance</h3><span class="action-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span></a>
+  <a class="action-card requires-auth" href="./create-pet-profile.html"><span class="action-emoji">🐶</span><h3>Create Pet Profile</h3><span class="action-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span></a>
+  <a class="action-card requires-auth" href="./pet-emergency-assitance.html"><span class="action-emoji">🧰❤</span><h3>Emergency Assistance</h3><span class="action-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span></a>
+  <a class="action-card requires-auth" href="./costumer-service.html"><span class="action-emoji">💬🐾</span><h3>Customer Assistance</h3><span class="action-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span></a>
 </section>
 
 <section class="trust-strip">
@@ -109,8 +121,8 @@
 <footer>
   <div class="footer-inner">
     <div class="footer-col"><h4><i class="fas fa-paw"></i> PawBnB</h4><p>Booked for you, made for Paws.</p></div>
-    <div class="footer-col"><h4>Quick</h4><a href="data:text/html;base64,PCFET0NUWVBFIGh0bWw+CjxodG1sIGxhbmc9ImVuIj4KPGhlYWQ+CjxtZXRhIGNoYXJzZXQ9IlVURi04Ij4KPHRpdGxlPlBhd0JuQiAtIEhvbWU8L3RpdGxlPgo8bGluayByZWw9InN0eWxlc2hlZXQiIGhyZWY9Ii4vc3R5bGUuY3NzIj4KPC9oZWFkPgo8Ym9keT4KPGgxPkhvbWU8L2gxPgo8L2JvZHk+CjwvaHRtbD4=">Home</a><a href="./about us.html" class="requires-auth">About</a><a href="./book.html" class="requires-auth">Book</a></div>
-    <div class="footer-col"><h4>Support</h4><a href="./pet emergency assitance.html" class="requires-auth">Emergency</a><a href="./costumer service.html" class="requires-auth">Customer Service</a><a href="./create pet profile.html" class="requires-auth">Pet Profile</a></div>
+    <div class="footer-col"><h4>Quick</h4><a href="./index.html">Home</a><a href="./about-us.html" class="requires-auth">About</a><a href="./book.html" class="requires-auth">Book</a></div>
+    <div class="footer-col"><h4>Support</h4><a href="./pet-emergency-assitance.html" class="requires-auth">Emergency</a><a href="./costumer-service.html" class="requires-auth">Customer Service</a><a href="./create-pet-profile.html" class="requires-auth">Pet Profile</a></div>
   </div>
   <div class="footer-bottom"><span>© 2026 PawBnB · made for paws</span></div>
 </footer>
@@ -121,10 +133,13 @@
 <script src="./firebase-config.js"></script>
 
 <script>
-  const userNameEl = document.getElementById('userName');
+  const userNameEl    = document.getElementById('userName');
   const authButtonsEl = document.getElementById('authButtons');
-  const userChipEl = document.getElementById('userChip');
-  const authModal = document.getElementById('authModal');
+  const userChipEl    = document.getElementById('userChip');
+  const userActionsEl = document.getElementById('userActions');
+  const adminBtn      = document.getElementById('adminBtn');
+  const logoutBtn     = document.getElementById('logoutBtn');
+  const authModal     = document.getElementById('authModal');
   let isLoggedIn = false;
   let hideTimer = null;
 
@@ -133,41 +148,56 @@
       isLoggedIn = true;
       authButtonsEl.style.display = 'none';
       userChipEl.style.display = 'flex';
+      userActionsEl.style.display = 'flex';
+      adminBtn.style.display = 'none'; // hidden until we confirm admin
+
       try {
         const profile = await getUserProfile(user.uid);
         const name = profile && profile.name ? profile.name : user.email.split('@')[0];
         userNameEl.textContent = `Hi, ${name}`;
-        if (profile && profile.role === 'admin') userNameEl.textContent += ' (Admin)';
-      } catch(e){ userNameEl.textContent = `Hi, ${user.email.split('@')[0]}`; }
-      userChipEl.style.cursor = 'pointer';
-      userChipEl.onclick = () => { if(confirm('Logout?')) auth.signOut().then(()=>location.reload()); };
+
+        if (profile && profile.role === 'admin') {
+          userNameEl.textContent += ' (Admin)';
+          adminBtn.style.display = 'inline-flex'; // only admins see this
+        }
+      } catch (e) {
+        userNameEl.textContent = `Hi, ${user.email.split('@')[0]}`;
+      }
     } else {
       isLoggedIn = false;
       userNameEl.textContent = 'Hi, Guest';
       userChipEl.style.display = 'flex';
       authButtonsEl.style.display = 'flex';
-      userChipEl.onclick = null;
+      userActionsEl.style.display = 'none';
+      adminBtn.style.display = 'none';
     }
   });
 
-  // CHANGED: 2-second popup only
+  // Log out
+  logoutBtn.addEventListener('click', async () => {
+    try {
+      await auth.signOut();
+      location.reload();
+    } catch (err) {
+      alert('Logout failed: ' + err.message);
+    }
+  });
+
+  // 2-second "login required" popup
   document.addEventListener('click', (e) => {
     const link = e.target.closest('.requires-auth');
     if (link && !isLoggedIn) {
       e.preventDefault();
       authModal.style.display = 'flex';
       if (hideTimer) clearTimeout(hideTimer);
-      hideTimer = setTimeout(() => {
-        authModal.style.display = 'none';
-      }, 2000);
+      hideTimer = setTimeout(() => { authModal.style.display = 'none'; }, 2000);
     }
   }, true);
 
-  // click outside to close early
-  authModal.addEventListener('click', (e) => { 
-    if(e.target===authModal){
-      authModal.style.display='none';
-      if(hideTimer) clearTimeout(hideTimer);
+  authModal.addEventListener('click', (e) => {
+    if (e.target === authModal) {
+      authModal.style.display = 'none';
+      if (hideTimer) clearTimeout(hideTimer);
     }
   });
 </script>
