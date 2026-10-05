@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PawBnB · Sign In</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  
+ 
+  <div class="auth-wrap">
+    <div class="page-header">
+      <h1><i class="fas fa-paw"></i> Welcome Back</h1>
+      <p>Sign in to manage your bookings and pets</p>
+    </div>
+ 
+    <div class="form-section">
+      <div id="form-msg" class="form-msg"></div>
+ 
+      <form id="login-form" class="pet-form" novalidate>
+        <label for="email">Email
+          <input type="email" id="email" name="email" placeholder="you@example.com" required autocomplete="email">
+        </label>
+        <label for="password">Password
+          <input type="password" id="password" name="password" placeholder="••••••••" required autocomplete="current-password">
+        </label>
+        <button type="submit" class="btn-primary" id="submit-btn">Sign In</button>
+      </form>
+ 
+      <p class="auth-switch">Don't have an account? <a href="signup.html">Create one</a></p>
+    </div>
+  </div>
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="./firebase-config.js"></script>
+  <script>
+    const form = document.getElementById('login-form');
+    const msg = document.getElementById('form-msg');
+    const btn = document.getElementById('submit-btn');
+ 
+    function showMsg(text, type) {
+      msg.textContent = text;
+      msg.className = 'form-msg ' + type;
+    }
+ 
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      msg.className = 'form-msg';
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+ 
+      btn.disabled = true;
+      btn.textContent = 'Signing in…';
+ 
+      auth.signInWithEmailAndPassword(email, password)
+        .then(function (cred) {
+          return getUserProfile(cred.user.uid);
+        })
+        .then(function (profile) {
+          if (profile && profile.role === 'admin') {
+            window.location.href = 'admindashboard.html';
+          } else {
+            window.location.href = 'index.html';
+          }
+        })
+        .catch(function (err) {
+          showMsg(friendlyError(err), 'error');
+          btn.disabled = false;
+          btn.textContent = 'Sign In';
+        });
+    });
+ 
+    function friendlyError(err) {
+      switch (err.code) {
+        case 'auth/invalid-email': return 'That email address looks invalid.';
+        case 'auth/user-not-found':
+        case 'auth/wrong-password':
+        case 'auth/invalid-credential': return 'Incorrect email or password.';
+        case 'auth/too-many-requests': return 'Too many attempts. Try again shortly.';
+        default: return err.message || 'Something went wrong. Please try again.';
+      }
+    }
+ 
+    // If already signed in, skip straight past the form.
+    auth.onAuthStateChanged(function (user) {
+      if (user) {
+        getUserProfile(user.uid).then(function (profile) {
+          window.location.href = (profile && profile.role === 'admin') ? 'admindashboard.html' : 'index.html';
+        });
+      }
+    });
+  </script>
+</body>
+</html>
+ 

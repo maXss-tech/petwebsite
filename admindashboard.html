@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PawBnB · Admin Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="navbar"><div class="nav-container">
+    <div class="nav-logo"><i class="fas fa-paw" style="color:#C99A4A;"></i><span>PawBnB</span></div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="admindashboard.html" class="active">Admin</a></li>
+    </ul>
+  </div></nav>
+ 
+  <div class="dash-layout">
+    <aside class="dash-sidebar">
+      <div class="dash-title"><i class="fas fa-paw"></i> PawBnB Admin</div>
+      <a href="#" class="dash-link active" data-panel="overview">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+        Overview
+      </a>
+
+      <a href="pets.html" class="dash-link" data-panel="pets">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="4" r="2"/><circle cx="18" cy="8" r="2"/><circle cx="4" cy="8" r="2"/><circle cx="8" cy="14" r="2"/><path d="M13 14a4 4 0 0 0-8 0c0 3 3 6 5 8 2-2 5-5 5-8a4 4 0 0 0-2-4"/></svg>
+        Pets
+      </a>
+
+      
+
+      <a href="bookings.html" class="dash-link">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg>
+  Bookings
+</a>
+      <a href="#" class="dash-link dash-signout" id="signout-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Sign Out
+      </a>
+    </aside>
+ 
+    <main class="dash-main">
+      <div class="dash-header">
+        <div>
+          <h1>Dashboard Overview</h1>
+          <p id="welcome-line">Loading admin session…</p>
+        </div>
+      </div>
+ 
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-label">Total Users</div><div class="stat-value" id="stat-users">–</div></div>
+        <div class="stat-card"><div class="stat-label">Pet Profiles</div><div class="stat-value" id="stat-pets">–</div></div>
+        <div class="stat-card"><div class="stat-label">Bookings</div><div class="stat-value" id="stat-bookings">–</div></div>
+        <div class="stat-card"><div class="stat-label">Emergency Requests</div><div class="stat-value" id="stat-emergencies">–</div></div>
+      </div>
+ 
+      <div class="dash-panel">
+        <div class="dash-panel-head"><h2>Recent Users</h2></div>
+        <table class="dash-table">
+          <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Joined</th></tr></thead>
+          <tbody id="users-body">
+            <tr><td colspan="4" class="dash-empty">Loading users…</td></tr>
+          </tbody>
+        </table>
+      </div>
+ 
+      <div class="dash-panel">
+        <div class="dash-panel-head"><h2>Recent Bookings</h2></div>
+        <table class="dash-table">
+          <thead><tr><th>Pet</th><th>Owner</th><th>Dates</th><th>Status</th></tr></thead>
+          <tbody id="bookings-body">
+            <tr><td colspan="4" class="dash-empty">Loading bookings…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script>
+    /* ---- Route guard: only signed-in users with role "admin" get in ---- */
+    auth.onAuthStateChanged(function (user) {
+      if (!user) {
+        window.location.href = 'login.html';
+        return;
+      }
+      getUserProfile(user.uid).then(function (profile) {
+        if (!profile || profile.role !== 'admin') {
+          window.location.href = 'index.html';
+          return;
+        }
+        document.getElementById('welcome-line').textContent =
+          'Signed in as ' + (profile.name || user.email);
+        loadStats();
+        loadUsers();
+        loadBookings();
+      });
+    });
+ 
+    document.getElementById('signout-btn').addEventListener('click', function (e) {
+      e.preventDefault();
+      auth.signOut().then(function () { window.location.href = 'login.html'; });
+    });
+ 
+    
+ 
+    /* ---- Stat counts ---- */
+    function loadStats() {
+      db.collection('users').get().then(function (s) { setStat('stat-users', s.size); }).catch(function () { setStat('stat-users', '—'); });
+      db.collection('pets').get().then(function (s) { setStat('stat-pets', s.size); }).catch(function () { setStat('stat-pets', '—'); });
+      db.collection('bookings').get().then(function (s) { setStat('stat-bookings', s.size); }).catch(function () { setStat('stat-bookings', '—'); });
+      db.collection('emergencyRequests').get().then(function (s) { setStat('stat-emergencies', s.size); }).catch(function () { setStat('stat-emergencies', '—'); });
+    }
+    function setStat(id, val) { document.getElementById(id).textContent = val; }
+ 
+    /* ---- Users table ---- */
+    function loadUsers() {
+      const body = document.getElementById('users-body');
+      db.collection('users').orderBy('createdAt', 'desc').limit(10).get()
+        .then(function (snap) {
+          if (snap.empty) { body.innerHTML = '<tr><td colspan="4" class="dash-empty">No users yet.</td></tr>'; return; }
+          body.innerHTML = '';
+          snap.forEach(function (doc) {
+            const u = doc.data();
+            const joined = u.createdAt && u.createdAt.toDate ? u.createdAt.toDate().toLocaleDateString() : '—';
+            const roleClass = u.role === 'admin' ? 'admin' : 'user';
+            body.insertAdjacentHTML('beforeend',
+              '<tr><td>' + escapeHtml(u.name || '—') + '</td>' +
+              '<td>' + escapeHtml(u.email || '—') + '</td>' +
+              '<td><span class="role-tag ' + roleClass + '">' + escapeHtml(u.role || 'user') + '</span></td>' +
+              '<td>' + joined + '</td></tr>');
+          });
+        })
+        .catch(function () {
+          body.innerHTML = '<tr><td colspan="4" class="dash-empty">Couldn\'t load users. Check Firestore rules.</td></tr>';
+        });
+    }
+ 
+    /* ---- Bookings table ---- */
+    function loadBookings() {
+      const body = document.getElementById('bookings-body');
+      db.collection('bookings').orderBy('createdAt', 'desc').limit(10).get()
+        .then(function (snap) {
+          if (snap.empty) { body.innerHTML = '<tr><td colspan="4" class="dash-empty">No bookings yet.</td></tr>'; return; }
+          body.innerHTML = '';
+          snap.forEach(function (doc) {
+            const b = doc.data();
+            body.insertAdjacentHTML('beforeend',
+              '<tr><td>' + escapeHtml(b.petName || '—') + '</td>' +
+              '<td>' + escapeHtml(b.ownerName || '—') + '</td>' +
+              '<td>' + escapeHtml(b.dates || '—') + '</td>' +
+              '<td><span class="role-tag user">' + escapeHtml(b.status || 'pending') + '</span></td></tr>');
+          });
+        })
+        .catch(function () {
+          body.innerHTML = '<tr><td colspan="4" class="dash-empty">Couldn\'t load bookings. Check Firestore rules.</td></tr>';
+        });
+    }
+ 
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, function (c) {
+        return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+      });
+    }
+  </script>
+</body>
+</html>
+ 

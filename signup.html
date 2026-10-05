@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PawBnB · Create Account</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="navbar"><div class="nav-container">
+    <div class="nav-logo"><i class="fas fa-paw" style="color:#C99A4A;"></i><span>PawBnB</span></div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li><li><a href="about us.html">About Us</a></li>
+      <li><a href="create pet profile.html">Create Pet</a></li>
+      <li><a href="pet emergency assitance.html">Pet Emergency</a></li>
+      <li><a href="costumer service.html">Customer Service</a></li><li><a href="book.html">Book</a></li>
+      <li><a href="login.html">Sign In</a></li>
+    </ul>
+  </div></nav>
+ 
+  <div class="auth-wrap">
+    <div class="page-header">
+      <h1><i class="fas fa-paw"></i> Create Your Account</h1>
+      <p>Join PawBnB to book stays for your pet</p>
+    </div>
+ 
+    <div class="form-section">
+      <div id="form-msg" class="form-msg"></div>
+ 
+      <form id="signup-form" class="pet-form" novalidate>
+        <label for="name">Full name
+          <input type="text" id="name" name="name" placeholder="Jane Cruz" required autocomplete="name">
+        </label>
+        <label for="email">Email
+          <input type="email" id="email" name="email" placeholder="you@example.com" required autocomplete="email">
+        </label>
+        <label for="password">Password
+          <input type="password" id="password" name="password" placeholder="At least 6 characters" required minlength="6" autocomplete="new-password">
+        </label>
+        <label for="confirm">Confirm password
+          <input type="password" id="confirm" name="confirm" placeholder="Re-enter password" required minlength="6" autocomplete="new-password">
+        </label>
+        <button type="submit" class="btn-primary" id="submit-btn">Create Account</button>
+      </form>
+ 
+      <p class="auth-switch">Already have an account? <a href="login.html">Sign in</a></p>
+    </div>
+  </div>
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script>
+    const form = document.getElementById('signup-form');
+    const msg = document.getElementById('form-msg');
+    const btn = document.getElementById('submit-btn');
+ 
+    function showMsg(text, type) {
+      msg.textContent = text;
+      msg.className = 'form-msg ' + type;
+    }
+ 
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      msg.className = 'form-msg';
+ 
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const confirm = document.getElementById('confirm').value;
+ 
+      if (password !== confirm) {
+        showMsg("Passwords don't match.", 'error');
+        return;
+      }
+ 
+      btn.disabled = true;
+      btn.textContent = 'Creating account…';
+ 
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(function (cred) {
+          return createUserProfile(cred.user.uid, { name: name, email: email })
+            .then(function () { return cred.user.updateProfile({ displayName: name }); });
+        })
+        .then(function () {
+          showMsg('Account created! Redirecting…', 'success');
+          setTimeout(function () { window.location.href = 'index.html'; }, 1000);
+        })
+        .catch(function (err) {
+          showMsg(friendlyError(err), 'error');
+          btn.disabled = false;
+          btn.textContent = 'Create Account';
+        });
+    });
+ 
+    function friendlyError(err) {
+      switch (err.code) {
+        case 'auth/email-already-in-use': return 'An account with that email already exists.';
+        case 'auth/invalid-email': return 'That email address looks invalid.';
+        case 'auth/weak-password': return 'Password should be at least 6 characters.';
+        default: return err.message || 'Something went wrong. Please try again.';
+      }
+    }
+  </script>
+</body>
+</html>
+ 

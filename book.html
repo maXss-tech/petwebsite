@@ -5,7 +5,7 @@
   <title>PawBnB · Book a Stay</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,600;14..32,800&display=swap" rel="stylesheet" />
- <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <nav class="navbar"><div class="nav-container">
@@ -20,13 +20,133 @@
 
   <section class="page-header"><h1><i class="fas fa-calendar-check"></i> Book Your Stay</h1><p>IMPORTANT: Pet-friendly booking</p></section>
   <section class="form-section">
-    <form class="pet-form">
-      <label>Check-in <input type="date" required></label>
-      <label>Check-out <input type="date" required></label>
-      <label>Select Pet <select><option>My Dog - Buddy</option><option>Add new pet</option></select></label>
-      <label>Location <input type="text" placeholder="Where are you staying?"></label>
-      <button type="submit" class="btn-primary"><i class="fas fa-paw"></i> Confirm Booking</button>
+    <div id="form-msg" class="form-msg"></div>
+
+    <form class="pet-form" id="book-form" novalidate>
+      <label>Check-in <input type="date" id="check-in" required></label>
+      <label>Check-out <input type="date" id="check-out" required></label>
+      <label>Select Pet
+        <select id="pet-select" required>
+          <option value="">Loading your pets…</option>
+        </select>
+      </label>
+      <label>Location <input type="text" id="location" placeholder="Where are you staying?"></label>
+      <button type="submit" class="btn-primary" id="submit-btn"><i class="fas fa-paw"></i> Confirm Booking</button>
     </form>
   </section>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script>
+    const form = document.getElementById('book-form');
+    const msg = document.getElementById('form-msg');
+    const btn = document.getElementById('submit-btn');
+    const petSelect = document.getElementById('pet-select');
+    const checkIn = document.getElementById('check-in');
+    const checkOut = document.getElementById('check-out');
+    let currentUser = null;
+    let ownerName = '';
+    const NEW_PET = '__new__';
+
+    function showMsg(text, type) {
+      msg.textContent = text;
+      msg.className = 'form-msg ' + type;
+    }
+
+    // No booking in the past
+    const today = new Date().toISOString().split('T')[0];
+    checkIn.min = today;
+    checkOut.min = today;
+    checkIn.addEventListener('change', function () {
+      checkOut.min = checkIn.value || today;
+    });
+
+    // Must be signed in; then load only this user's pets.
+    auth.onAuthStateChanged(function (user) {
+      if (!user) { window.location.href = 'login.html'; return; }
+      currentUser = user;
+
+      getUserProfile(user.uid).then(function (p) {
+        ownerName = (p && p.name) || user.displayName || user.email;
+      });
+
+      db.collection('pets').where('ownerId', '==', user.uid).get()
+        .then(function (snap) {
+          petSelect.innerHTML = '';
+          if (snap.empty) {
+            petSelect.innerHTML = '<option value="">No pets yet</option>';
+          } else {
+            petSelect.insertAdjacentHTML('beforeend', '<option value="">Choose a pet…</option>');
+            snap.forEach(function (doc) {
+              const opt = document.createElement('option');
+              opt.value = doc.id;
+              opt.textContent = doc.data().name;
+              opt.dataset.name = doc.data().name;
+              petSelect.appendChild(opt);
+            });
+          }
+          const add = document.createElement('option');
+          add.value = NEW_PET;
+          add.textContent = '+ Add new pet';
+          petSelect.appendChild(add);
+        })
+        .catch(function () {
+          petSelect.innerHTML = '<option value="">Couldn\'t load pets</option>';
+          showMsg('Couldn\'t load your pets. Check Firestore rules.', 'error');
+        });
+    });
+
+    petSelect.addEventListener('change', function () {
+      if (petSelect.value === NEW_PET) window.location.href = 'create pet profile.html';
+    });
+
+    // "Oct 3, 2026 – Oct 7, 2026" (built from the date strings so timezones can't shift the day)
+    function fmt(iso) {
+      const p = iso.split('-');
+      return new Date(+p[0], +p[1] - 1, +p[2])
+        .toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      msg.className = 'form-msg';
+
+      if (!currentUser) { showMsg('Please sign in first.', 'error'); return; }
+      if (!checkIn.value || !checkOut.value) { showMsg('Please choose check-in and check-out dates.', 'error'); return; }
+      if (checkOut.value < checkIn.value) { showMsg('Check-out can\'t be before check-in.', 'error'); return; }
+      if (!petSelect.value || petSelect.value === NEW_PET) { showMsg('Please select a pet.', 'error'); return; }
+
+      const selected = petSelect.options[petSelect.selectedIndex];
+
+      btn.disabled = true;
+      btn.textContent = 'Booking…';
+
+      db.collection('bookings').add({
+        petId: petSelect.value,
+        petName: selected.dataset.name,
+        ownerId: currentUser.uid,
+        ownerName: ownerName || currentUser.email,
+        checkIn: checkIn.value,
+        checkOut: checkOut.value,
+        dates: fmt(checkIn.value) + ' – ' + fmt(checkOut.value),
+        location: document.getElementById('location').value.trim(),
+        status: 'pending',
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      })
+      .then(function () {
+        showMsg('Booking submitted! We\'ll confirm it shortly.', 'success');
+        form.reset();
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paw"></i> Confirm Booking';
+      })
+      .catch(function (err) {
+        showMsg(err.message || 'Could not create the booking. Please try again.', 'error');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paw"></i> Confirm Booking';
+      });
+    });
+  </script>
 </body>
 </html>
